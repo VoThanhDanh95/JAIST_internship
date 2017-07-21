@@ -1,0 +1,8 @@
+0-inkyTime_!=_0-SinkyNode-1
+1-blinkyTime_!=_0-SblinkyNode-2
+2-pinkyTime_!=_0-SpinkyNode-3
+3-sueTime_!=_0-SsueNode-4
+4-nearestGhostDist_>_20-5-FnearestGhostNode
+5-nearestPillDist_<_10-SnearestPillNode-FnearestGhostNode
+6-nearestPowerPillDist_<_nearestPillDist-SnearestPowerPillNode-7
+7-nearestPowerPillDist_<_nearestGhostDist-SnearestPowerPillNode-SnearestPillNode
