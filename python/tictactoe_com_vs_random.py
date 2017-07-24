@@ -3,6 +3,7 @@ import random
 NTRIALS = 1000         # Number of trials to run
 SCORE_CURRENT = 1.0 # Score for squares played by the current player
 SCORE_OTHER = 1.0   # Score for squares played by the other player
+NUMBER_OF_GAMES = 1000
 
 def drawBoard(board):
     print('   |   |')
@@ -78,6 +79,12 @@ def getMoveList(board):
             possibleMoves.append(i) 
     return possibleMoves
 
+def chooseRandomMoveFromBoard(board):
+    possibleMoves = getMoveList(board)
+    if len(possibleMoves) != 0:
+        return random.choice(possibleMoves)
+    else:
+        return None
 
 def isFinish(board):
     return isBoardFull(board) or isWinner(board, 'X') or isWinner(board, 'O')
@@ -90,11 +97,11 @@ def trial(board, playerLetter):
             playerLetter = 'O'
         else:
             playerLetter = 'X'
-    drawBoard(board)
+    # drawBoard(board)
     pass
 
 def updateScores(scores, board, playerLetter):
-    if isBoardFull(board):
+    if isBoardFull(board) and (not isWinner(board, 'X')) and (not isWinner(board, 'O')):
         return
     lengthBoard = len(board) - 1 #drop position 0 of board
     coef = 1
@@ -125,34 +132,42 @@ def decideMove(board, playerLetter, trials):
         dupeBoard = getBoardCopy(board)
         trial(dupeBoard, playerLetter)
         updateScores(scores, dupeBoard, playerLetter)
-
-        print(scores[1:])
+        # print(scores[1:])
     return findBestMove(board, scores)
 
 # scores = [0] * 10
 # board = [' '] * 10
 
 print('Welcome to Tic Tac Toe!')
-while True:
+
+computer_win = 0
+player_win = 0
+drawn = 0
+for i in xrange(0, NUMBER_OF_GAMES):
+    #set up 
     theBoard = [' '] * 10
     scores = [0] * 10   
-    playerLetter, computerLetter = inputPlayerLetter()
-    turn = whoGoesFirst()
-    print('The ' + turn + ' will go first.')
+    playerLetter = 'X'
+    computerLetter = 'O'
+    turn = 'player'
+
+    print(i)
+
     gameIsPlaying = True
     while gameIsPlaying:
         if turn == 'player':
-            drawBoard(theBoard)
-            move = getPlayerMove(theBoard)
+            move = chooseRandomMoveFromBoard(theBoard)
+            # move = decideMove(theBoard, playerLetter, NTRIALS)
             makeMove(theBoard, playerLetter, move)
             if isWinner(theBoard, playerLetter):
+                player_win += 1
                 drawBoard(theBoard)
-                print('Hooray! You have won the game!')
                 gameIsPlaying = False
             else:
                 if isBoardFull(theBoard):
-                    drawBoard(theBoard)
-                    print('The game is a tie!')
+                    drawn += 1
+                    # drawBoard(theBoard)
+                    # print('The game is a tie!')
                     break
                 else:
                     turn = 'computer'
@@ -160,18 +175,21 @@ while True:
             move = decideMove(theBoard, computerLetter, NTRIALS)
             makeMove(theBoard, computerLetter, move)
             if isWinner(theBoard, computerLetter):
-                drawBoard(theBoard)
-                print('The computer has beaten you! You lose.')
+                computer_win += 1
+                # drawBoard(theBoard)
+                # print('The computer has beaten you! You lose.')
                 gameIsPlaying = False
             else:
                 if isBoardFull(theBoard):
-                    drawBoard(theBoard)
-                    print('The game is a tie!')
+                    drawn += 1
+                    # drawBoard(theBoard)
+                    # print('The game is a tie!')
                     break
                 else:
                     turn = 'player'
-    if not playAgain():
-        break
+    pass
 
-
+print('computer win: ', computer_win)
+print('player win: ', player_win)
+print('drawn: ', drawn)
 

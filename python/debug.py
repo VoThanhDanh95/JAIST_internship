@@ -1,6 +1,7 @@
 import random
 
-NTRIALS = 1000         # Number of trials to run
+NTRIALS = 3
+         # Number of trials to run
 SCORE_CURRENT = 1.0 # Score for squares played by the current player
 SCORE_OTHER = 1.0   # Score for squares played by the other player
 
@@ -94,7 +95,7 @@ def trial(board, playerLetter):
     pass
 
 def updateScores(scores, board, playerLetter):
-    if isBoardFull(board):
+    if isBoardFull(board) and (not isWinner(board, 'X')) and (not isWinner(board, 'O')):
         return
     lengthBoard = len(board) - 1 #drop position 0 of board
     coef = 1
@@ -130,48 +131,53 @@ def decideMove(board, playerLetter, trials):
     return findBestMove(board, scores)
 
 print('Welcome to Tic Tac Toe!')
-while True:
-    theBoard = [' '] * 10
-    scores = [0] * 10   
-    # playerLetter, computerLetter = inputPlayerLetter()
-    # turn = whoGoesFirst()
-    playerLetter = 'X'
-    computerLetter = 'O'
-    turn = 'player'
+theBoard = [' ', 'X', ' ',' ',' ','O',' ',' ',' ','X']
+drawBoard(theBoard)
+print
+print
+move = decideMove(theBoard, 'O', NTRIALS)
+# while True:
+#     theBoard = [' '] * 10
+#     scores = [0] * 10   
+#     # playerLetter, computerLetter = inputPlayerLetter()
+#     # turn = whoGoesFirst()
+#     playerLetter = 'X'
+#     computerLetter = 'O'
+#     turn = 'player'
 
-    gameIsPlaying = True
-    while gameIsPlaying:
-        if turn == 'player':
-            drawBoard(theBoard)
-            move = getPlayerMove(theBoard)
-            makeMove(theBoard, playerLetter, move)
-            if isWinner(theBoard, playerLetter):
-                drawBoard(theBoard)
-                print('Hooray! You have won the game!')
-                gameIsPlaying = False
-            else:
-                if isBoardFull(theBoard):
-                    drawBoard(theBoard)
-                    print('The game is a tie!')
-                    break
-                else:
-                    turn = 'computer'
-        else:
-            move = decideMove(theBoard, computerLetter, NTRIALS)
-            makeMove(theBoard, computerLetter, move)
-            if isWinner(theBoard, computerLetter):
-                drawBoard(theBoard)
-                print('The computer has beaten you! You lose.')
-                gameIsPlaying = False
-            else:
-                if isBoardFull(theBoard):
-                    drawBoard(theBoard)
-                    print('The game is a tie!')
-                    break
-                else:
-                    turn = 'player'
-    if not playAgain():
-        break
+#     gameIsPlaying = True
+#     while gameIsPlaying:
+#         if turn == 'player':
+#             drawBoard(theBoard)
+#             move = getPlayerMove(theBoard)
+#             makeMove(theBoard, playerLetter, move)
+#             if isWinner(theBoard, playerLetter):
+#                 drawBoard(theBoard)
+#                 print('Hooray! You have won the game!')
+#                 gameIsPlaying = False
+#             else:
+#                 if isBoardFull(theBoard):
+#                     drawBoard(theBoard)
+#                     print('The game is a tie!')
+#                     break
+#                 else:
+#                     turn = 'computer'
+#         else:
+#             move = decideMove(theBoard, computerLetter, NTRIALS)
+#             makeMove(theBoard, computerLetter, move)
+#             if isWinner(theBoard, computerLetter):
+#                 drawBoard(theBoard)
+#                 print('The computer has beaten you! You lose.')
+#                 gameIsPlaying = False
+#             else:
+#                 if isBoardFull(theBoard):
+#                     drawBoard(theBoard)
+#                     print('The game is a tie!')
+#                     break
+#                 else:
+#                     turn = 'player'
+#     if not playAgain():
+#         break
 
 
 
