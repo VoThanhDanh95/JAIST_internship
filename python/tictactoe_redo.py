@@ -1,9 +1,8 @@
 import random
 
-NTRIALS = 1000         # Number of trials to run
-SCORE_CURRENT = 1.0 # Score for squares played by the current player
-SCORE_OTHER = 10.0   # Score for squares played by the other player
-NUMBER_OF_GAMES = 1000
+NTRIALS = 1000        # Number of trials to run
+NUMBER_OF_GAMES = 10000
+FIRST_TURN = 'player'
 
 def drawBoard(board):
     print('   |   |')
@@ -89,70 +88,85 @@ def chooseRandomMoveFromBoard(board):
 def isFinish(board):
     return isBoardFull(board) or isWinner(board, 'X') or isWinner(board, 'O')
 
+def switchPlayer(playerLetter):
+    if playerLetter == 'X':
+        return 'O'
+    else:
+        return 'X'
+
 def trial(board, playerLetter):
     while not isFinish(board):
         moveList = getMoveList(board)
         makeMove(board, playerLetter, random.choice(moveList))
-        if playerLetter == 'X':
-            playerLetter = 'O'
-        else:
-            playerLetter = 'X'
+        playerLetter = switchPlayer(playerLetter)
+        # print
+        # print
+        # print
+        # drawBoard(board)
     # drawBoard(board)
     pass
 
-# def updateScores(scores, board, playerLetter):
-#     if isBoardFull(board) and (not isWinner(board, 'X')) and (not isWinner(board, 'O')):
-#         return
-#     lengthBoard = len(board) - 1 #drop position 0 of board
-#     coef = 1
-#     if not isWinner(board, playerLetter):
-#         coef = -1
-#     for i in range(1, lengthBoard+1):
-#         if board[i] == playerLetter:
-#             scores[i] += coef*SCORE_CURRENT
-#         elif board[i] != ' ':
-#             scores[i] -= coef*SCORE_OTHER
-#     pass
 
 
-def updateScores(scores, board, playerLetter):
-    lengthBoard = len(board) - 1 #drop position 0 of board
+def updateScores(scores, move, board, playerLetter):
+    # print('update score board', board)
+    # print('tie?', isBoardFull(board) and (not isWinner(board, 'X')) and (not isWinner(board, 'O')))
+
     if isBoardFull(board) and (not isWinner(board, 'X')) and (not isWinner(board, 'O')):
-        for i in range(1, lengthBoard+1):
-            if board[i] != ' ':
-                scores[i] += 10
-    elif not isWinner(board, playerLetter):
-        for i in range(1, lengthBoard+1):
-            if board[i] != playerLetter and board[i] != ' ':
-                scores[i] += 10
-    elif isWinner(board, playerLetter):
-        return
-    pass
-   
-
-def findBestMove(board, scores):
-    moveList = getMoveList(board)
-    if len(moveList) == 0:
-        return
-    best_move = moveList[0]
-    best_score = scores[best_move]
-    for i in moveList[1:]:
-        if scores[i] > best_score:
-            best_move = i
-            best_score = scores[i]
-    return best_move
+        scores[move] += 0.5
+    elif isWinner(board, playerLetter): 
+        scores[move] += 1
 
 def decideMove(board, playerLetter, trials):
-    scores = [0] * 10
-    for i in range(0, trials):
-        dupeBoard = getBoardCopy(board)
-        trial(dupeBoard, playerLetter)
-        updateScores(scores, dupeBoard, playerLetter)
-        # print(scores[1:])
-    return findBestMove(board, scores)
 
-# scores = [0] * 10
-# board = [' '] * 10
+    for i in range(1,10):
+        checkWinMoveBoard = getBoardCopy(board)
+        if isSpaceFree(checkWinMoveBoard, i):
+            makeMove(checkWinMoveBoard, playerLetter, i)
+
+            if isWinner(checkWinMoveBoard, playerLetter):
+                # print('check our win state')
+                # drawBoard(checkWinMoveBoard)
+                # print('choose specific move', i)
+                return i
+    for i in range(1,10):
+        checkWinMoveBoardOpponent = getBoardCopy(board)
+        if isSpaceFree(checkWinMoveBoardOpponent, i):
+            makeMove(checkWinMoveBoardOpponent, switchPlayer(playerLetter), i)
+            
+            if isWinner(checkWinMoveBoardOpponent, switchPlayer(playerLetter)):
+                # print('check opponent\'s win state')
+                # drawBoard(checkWinMoveBoard)    # print('choose specific move', i)
+                return i
+
+    scores = [0] * 10
+    scores[5] = NTRIALS
+    moveList = getMoveList(board)
+    # print('move list', moveList)
+    if len(moveList) == 0:
+        return
+    for move in moveList:
+        # print('length move list', len(moveList))
+        dupeBoard = getBoardCopy(board)
+        # print('move number', move)
+        # print('playerLetter', playerLetter)
+        makeMove(dupeBoard, playerLetter, move)
+
+        for i in range(0, trials):
+            # print('trials', i)
+            dupeBoardAfterFirstMove = getBoardCopy(dupeBoard)
+            trial(dupeBoardAfterFirstMove, switchPlayer(playerLetter))
+            updateScores(scores, move, dupeBoardAfterFirstMove, playerLetter)
+            # print(scores)
+
+        if len(moveList) == 6:
+            # print('come len move list eq 6')
+            for i in range(2,10,2):
+                scores[i] += NTRIALS/100
+    # print(scores[1:])
+    # print(scores.index(max(scores)))
+    return scores.index(max(scores))
+
 
 print('Welcome to Tic Tac Toe!')
 
@@ -165,14 +179,18 @@ for i in xrange(0, NUMBER_OF_GAMES):
     scores = [0] * 10   
     playerLetter = 'X'
     computerLetter = 'O'
-    turn = 'player'
+    turn = FIRST_TURN
 
     print(i)
 
     gameIsPlaying = True
     while gameIsPlaying:
         if turn == 'player':
+            # drawBoard(theBoard)
+            # move = getPlayerMove(theBoard)
+
             move = chooseRandomMoveFromBoard(theBoard)
+
             # move = decideMove(theBoard, playerLetter, NTRIALS)
             makeMove(theBoard, playerLetter, move)
             if isWinner(theBoard, playerLetter):
