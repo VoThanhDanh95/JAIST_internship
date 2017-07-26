@@ -1,6 +1,6 @@
 import random
 
-NTRIALS = 1000        # Number of trials to run
+NTRIALS = 300        # Number of trials to run
 NUMBER_OF_GAMES = 10000
 FIRST_TURN = 'player'
 
@@ -94,9 +94,39 @@ def switchPlayer(playerLetter):
     else:
         return 'X'
 
+def getAdvancedMove(board, moveList, playerLetter):
+    for i in moveList:
+        checkWinMoveBoard = getBoardCopy(board)
+        if isSpaceFree(checkWinMoveBoard, i):
+            makeMove(checkWinMoveBoard, playerLetter, i)
+            if isWinner(checkWinMoveBoard, playerLetter):
+                return i
+
+    for i in moveList:
+        checkWinMoveBoardOpponent = getBoardCopy(board)
+        if isSpaceFree(checkWinMoveBoardOpponent, i):
+            makeMove(checkWinMoveBoardOpponent, switchPlayer(playerLetter), i)
+            if isWinner(checkWinMoveBoardOpponent, switchPlayer(playerLetter)):
+                return i
+    return -1
+
 def trial(board, playerLetter):
     while not isFinish(board):
         moveList = getMoveList(board)
+        advancedMove = getAdvancedMove(board, moveList, playerLetter)
+        # if advancedMove == -1:
+        #     makeMove(board, playerLetter, random.choice(moveList))
+        # else:
+        #     makeMove(board, playerLetter, advancedMove)
+        if advancedMove != -1:
+            moveList.append(advancedMove)
+            moveList.append(advancedMove)
+            moveList.append(advancedMove)
+            moveList.append(advancedMove)
+            moveList.append(advancedMove)
+            # moveList.append(advancedMove)
+            # moveList.append(advancedMove)
+            # moveList.append(advancedMove)
         makeMove(board, playerLetter, random.choice(moveList))
         playerLetter = switchPlayer(playerLetter)
         # print
@@ -109,62 +139,31 @@ def trial(board, playerLetter):
 
 
 def updateScores(scores, move, board, playerLetter):
-    # print('update score board', board)
-    # print('tie?', isBoardFull(board) and (not isWinner(board, 'X')) and (not isWinner(board, 'O')))
-
     if isBoardFull(board) and (not isWinner(board, 'X')) and (not isWinner(board, 'O')):
         scores[move] += 0.5
     elif isWinner(board, playerLetter): 
         scores[move] += 1
 
 def decideMove(board, playerLetter, trials):
-
-    for i in range(1,10):
-        checkWinMoveBoard = getBoardCopy(board)
-        if isSpaceFree(checkWinMoveBoard, i):
-            makeMove(checkWinMoveBoard, playerLetter, i)
-
-            if isWinner(checkWinMoveBoard, playerLetter):
-                # print('check our win state')
-                # drawBoard(checkWinMoveBoard)
-                # print('choose specific move', i)
-                return i
-    for i in range(1,10):
-        checkWinMoveBoardOpponent = getBoardCopy(board)
-        if isSpaceFree(checkWinMoveBoardOpponent, i):
-            makeMove(checkWinMoveBoardOpponent, switchPlayer(playerLetter), i)
-            
-            if isWinner(checkWinMoveBoardOpponent, switchPlayer(playerLetter)):
-                # print('check opponent\'s win state')
-                # drawBoard(checkWinMoveBoard)    # print('choose specific move', i)
-                return i
-
     scores = [0] * 10
-    # scores[5] = NTRIALS
     moveList = getMoveList(board)
-    # print('move list', moveList)
     if len(moveList) == 0:
         return
     for move in moveList:
-        # print('length move list', len(moveList))
         dupeBoard = getBoardCopy(board)
-        # print('move number', move)
-        # print('playerLetter', playerLetter)
         makeMove(dupeBoard, playerLetter, move)
 
         for i in range(0, trials):
-            # print('trials', i)
             dupeBoardAfterFirstMove = getBoardCopy(dupeBoard)
             trial(dupeBoardAfterFirstMove, switchPlayer(playerLetter))
             updateScores(scores, move, dupeBoardAfterFirstMove, playerLetter)
-            # print(scores)
-
-        if len(moveList) == 6:
-            # print('come len move list eq 6')
-            for i in range(2,10,2):
-                scores[i] += NTRIALS/100
     # print(scores[1:])
     # print(scores.index(max(scores)))
+    if scores.index(max(scores)) not in moveList:
+        print('not in move list')
+        print('this is move list', moveList)
+        print('this is what you return', scores)
+        print('this is board', drawBoard(board))
     return scores.index(max(scores))
 
 
@@ -182,7 +181,7 @@ for i in xrange(0, NUMBER_OF_GAMES):
     turn = FIRST_TURN
 
     print(i)
-
+    print('player win', player_win)
     gameIsPlaying = True
     while gameIsPlaying:
         if turn == 'player':
