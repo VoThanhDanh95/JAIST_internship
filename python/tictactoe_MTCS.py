@@ -1,6 +1,6 @@
 import random
 
-NTRIALS = 300        # Number of trials to run
+NTRIALS = 500        # Number of trials to run
 NUMBER_OF_GAMES = 10000
 FIRST_TURN = 'player'
 
@@ -119,14 +119,9 @@ def trial(board, playerLetter):
         # else:
         #     makeMove(board, playerLetter, advancedMove)
         if advancedMove != -1:
-            moveList.append(advancedMove)
-            moveList.append(advancedMove)
-            moveList.append(advancedMove)
-            moveList.append(advancedMove)
-            moveList.append(advancedMove)
-            # moveList.append(advancedMove)
-            # moveList.append(advancedMove)
-            # moveList.append(advancedMove)
+            moveList.extend([advancedMove] * 5)
+        if 5 in moveList:
+            moveList.extend([5] * 3)
         makeMove(board, playerLetter, random.choice(moveList))
         playerLetter = switchPlayer(playerLetter)
         # print
@@ -171,7 +166,7 @@ print('Welcome to Tic Tac Toe!')
 
 computer_win = 0
 player_win = 0
-drawn = 0
+draw = 0
 for i in xrange(0, NUMBER_OF_GAMES):
     #set up 
     theBoard = [' '] * 10
@@ -181,16 +176,18 @@ for i in xrange(0, NUMBER_OF_GAMES):
     turn = FIRST_TURN
 
     print(i)
+    print('computer_win', computer_win)
     print('player win', player_win)
+    print('draw', draw)
     gameIsPlaying = True
     while gameIsPlaying:
         if turn == 'player':
-            drawBoard(theBoard)
-            move = getPlayerMove(theBoard)
+            # drawBoard(theBoard)
+            # move = getPlayerMove(theBoard)
 
             # move = chooseRandomMoveFromBoard(theBoard)
 
-            # move = decideMove(theBoard, playerLetter, NTRIALS)
+            move = decideMove(theBoard, playerLetter, NTRIALS)
             makeMove(theBoard, playerLetter, move)
             if isWinner(theBoard, playerLetter):
                 player_win += 1
@@ -198,7 +195,7 @@ for i in xrange(0, NUMBER_OF_GAMES):
                 gameIsPlaying = False
             else:
                 if isBoardFull(theBoard):
-                    drawn += 1
+                    draw += 1
                     # drawBoard(theBoard)
                     # print('The game is a tie!')
                     break
@@ -214,7 +211,7 @@ for i in xrange(0, NUMBER_OF_GAMES):
                 gameIsPlaying = False
             else:
                 if isBoardFull(theBoard):
-                    drawn += 1
+                    draw += 1
                     # drawBoard(theBoard)
                     # print('The game is a tie!')
                     break
@@ -224,5 +221,5 @@ for i in xrange(0, NUMBER_OF_GAMES):
 
 print('computer win: ', computer_win)
 print('player win: ', player_win)
-print('drawn: ', drawn)
+print('draw: ', draw)
 
