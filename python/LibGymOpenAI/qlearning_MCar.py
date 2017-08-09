@@ -5,10 +5,10 @@ from gym import wrappers
 BINS_X = 130
 BINS_VELO = 100
 N_LAST_EPISODE = 100
-EPISODE = 100000     #training numbers
+EPISODE = 150000     #training numbers
 ALPHA = 0.2         #learning rate
-GAMMA = 0.9         #discount reward    
-EPSILON = 0.1       #exploration chance
+GAMMA = 0.995         #discount reward    
+EPSILON = 0.01       #exploration chance
 
 EPISODE_TEST=1000
 env=gym.make('MountainCar-v0')
@@ -58,7 +58,7 @@ def QLearning():
         pass
         if EPISODE-i<=N_LAST_EPISODE:
             average_reward.append(total_reward)
-        print('total reward %d %f'%(i,total_reward))    
+        print('total reward %d %f'%(i, total_reward))    
     return sum(average_reward)/len(average_reward)
 
 def QlearningTest():
@@ -75,11 +75,13 @@ def QlearningTest():
             s = s_
             total_reward += reward
 
+            # env.render()
             if done:
                 break
             pass
         if EPISODE_TEST-i<=N_LAST_EPISODE:
             average_reward_test.append(total_reward)
+        print('total test reward %d %f'%(i, total_reward))    
     return sum(average_reward_test)/len(average_reward_test)
 
 
@@ -87,5 +89,6 @@ def QlearningTest():
 
 training_result = QLearning()
 print('average training_result ', training_result)
+# raw_input('enter to test')
 test_result = QlearningTest()
 print('average test_result', test_result)
