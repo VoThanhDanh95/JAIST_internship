@@ -45,6 +45,14 @@ class ValueIterationAgent(ValueEstimationAgent):
 
         # Write value iteration code here
         "*** YOUR CODE HERE ***"
+        allStates = self.mdp.getStates()
+        for _ in range(self.iterations):
+          copyValues = self.values.copy()
+          for state in allStates:
+            actions = self.mdp.getPossibleActions(state)
+            if actions:
+              copyValues[state] = max([self.getQValue(state, action) for action in actions])
+          self.values = copyValues
 
 
     def getValue(self, state):
@@ -60,7 +68,20 @@ class ValueIterationAgent(ValueEstimationAgent):
           value function stored in self.values.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # print 'state', state
+        # print 'action', action
+        # print 'next state'
+        # print self.mdp.getTransitionStatesAndProbs(state, action)
+
+        qValue = 0
+
+        for nextState, prob in self.mdp.getTransitionStatesAndProbs(state, action):
+          reward = self.mdp.getReward(state, action, nextState)
+          qValue += prob*(reward + self.discount*self.getValue(nextState))
+
+        return qValue
+
+        # util.raiseNotDefined()
 
     def computeActionFromValues(self, state):
         """
@@ -72,6 +93,30 @@ class ValueIterationAgent(ValueEstimationAgent):
           terminal state, you should return None.
         """
         "*** YOUR CODE HERE ***"
+        # for action in self.mdp.getPossibleActions(state):
+        actions = self.mdp.getPossibleActions(state)
+        if actions:
+          values = [self.getQValue(state, action) for action in actions]
+          return actions[values.index(max(values))]
+        else:
+          return None
+
+
+
+
+
+
+
+        # state_actions = [(state, action) for action in self.mdp.getPossibleActions(state)]
+        # values = [self.values.get(state_action) for state_action in state_actions]
+        # if values:
+        #   return_action = state_actions[values.index(max(values))][1]
+        # else:
+        #   print 'none'
+        #   return None
+
+        # print 'return action', return_action
+        # return return_action
         util.raiseNotDefined()
 
     def getPolicy(self, state):
