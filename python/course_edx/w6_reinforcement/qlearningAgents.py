@@ -199,6 +199,9 @@ class ApproximateQAgent(PacmanQAgent):
         "*** YOUR CODE HERE ***"
         different = (reward + self.discount*self.getValue(nextState)) - self.getQValue(state, action)
         featureVector = self.featExtractor.getFeatures(state, action)
+        # print 'feature Vector'
+        # print featureVector
+        # print 'length feature vector in update ', len(featureVector)
         for state_action, f in featureVector.iteritems():
           self.weights[state_action] = self.weights[state_action] + self.alpha*different*f
         # util.raiseNotDefined()
@@ -210,6 +213,8 @@ class ApproximateQAgent(PacmanQAgent):
 
         # did we finish training?
         if self.episodesSoFar == self.numTraining:
+            print 'length weights', len(self.weights)
+            print self.weights
             # you might want to print your weights here for debugging
             "*** YOUR CODE HERE ***"
             pass

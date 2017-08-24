@@ -32,6 +32,8 @@ class IdentityExtractor(FeatureExtractor):
         # print state
         feats = util.Counter()
         feats[(state,action)] = 1.0
+        print 'feats'
+        print feats
         return feats
 
 class CoordinateExtractor(FeatureExtractor):
@@ -76,9 +78,15 @@ class SimpleExtractor(FeatureExtractor):
 
     def getFeatures(self, state, action):
         # extract the grid of food and wall locations and get the ghost locations
+        # raw_input('get feature')
         food = state.getFood()
         walls = state.getWalls()
         ghosts = state.getGhostPositions()
+        
+        newGhostStates = state.getGhostStates()
+        listScaredTime = [ghostState.scaredTimer for ghostState in newGhostStates]
+        # print 'list scared time', listScaredTime
+        totalScaredTime = sum([ghostState.scaredTimer for ghostState in newGhostStates])
 
         features = util.Counter()
 
@@ -96,10 +104,29 @@ class SimpleExtractor(FeatureExtractor):
         if not features["#-of-ghosts-1-step-away"] and food[next_x][next_y]:
             features["eats-food"] = 1.0
 
+        # if max(listScaredTime) > 0:
+        #     features["eats-ghost"] = 100.0 #scaredTime/80
+
+        i = 1
+        for ghost in newGhostStates:
+            if features["#-of-ghosts-1-step-away"] and min(listScaredTime) > 0:
+                features["eats-ghost-%d" %i] = 10.0
+            i += 1
+
+        # i = 0
+        # for ghost in newGhostStates:
+        #     if features["#-of-ghosts-1-step-away"] and listScaredTime[i] > 0:
+        #         features["eats-ghost-%d" %i] = 10.0
+        #     i += 1
+
         dist = closestFood((next_x, next_y), food, walls)
         if dist is not None:
             # make the distance a number less than one otherwise the update
             # will diverge wildly
             features["closest-food"] = float(dist) / (walls.width * walls.height)
+        #test
+
         features.divideAll(10.0)
+        # print 'features'
+        # print features
         return features

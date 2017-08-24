@@ -77,7 +77,6 @@ class ReflexAgent(Agent):
         numAgents = successorGameState.getNumAgents()
         foodList = newFood.asList()
 
-        print('come here?')
 
         score = successorGameState.getScore()
         distanceToGhost = min([manhattanDistance(newPos, successorGameState.getGhostPosition(i)) for i in range(1,numAgents)])
