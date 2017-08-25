@@ -1,0 +1,24 @@
+Today I will introduce you about a popular game called Pac-Man. Pacman is a real-time arcade game. It is my favorite game when I was young and I think it's a good test bed for me to apply some algorithms. So I choose it to solve during this internship. Before we start, it is better to tell some rules about this game.
+
+The player controls the main character through a maze, eating pills and avoiding the ghost chasing him. The maze also contains some power-pills that make the ghosts to scared timed. During the ghosts scared time, Pacman can eat them to obtain higher scores.
+At each state, in case there are no walls in front of him, he has 5 possible moves: North, South, East, West and Stop. After his move, the ghost will choose a random move in their possible moves. The game ends when there are no pills on the maze or the Pacman died.
+
+The rewards after each move are:
+Make move: -1
+Eat pill: +10
+Eat ghost: +200
+Win: +500
+Lose: -500
+
+So let's start.
+
+The basic step we need to do to solve this problem is that we have to teach the Pacman to explore the maze without ghost. In this case, I choose deepth first search, breadth first search and A*. 
+
+Depth first search is an algorithm for traversing or searching tree or graph data structures. One starts at the root and explores as far as possible along each branch before backtracking
+
+Here is a demo about dfs.
+
+With breadth-first search, it explores the neighbors (same level) nodes first, before moving to the next level neighbors.
+
+So you can see this video to understand.
+
